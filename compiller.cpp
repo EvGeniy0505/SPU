@@ -2,36 +2,17 @@
 
 int main()
 {
-    // TODO: Make separate file for allllll
-    AllFile programm = {};
 
-    char *code = (char*)malloc(sizeof(char));
+    struct text_params tp = constructur_text_params();
 
-    printf("%s", "Enter file name:");
+    called_segment* all_segments = (called_segment*)calloc(tp.quantity_strs, sizeof(called_segment));  //кол-во команд
 
-    input_str(name_of_file);
+    int *final_proc = (int *)calloc(tp.quantity_strs * 2, sizeof(int)); // TODO: magic number, mb realloc
 
 
-
-    programm = ScanfFile(name_of_file);
-
-    free(name_of_file);
-
-    size_t num_func = programm.SizePtrs;
-
-    char command[5] = {}; // TODO: Remove magic number
-    int val = 0;
-    int how_many = 0;     // *1
-    int num_command = 0;
-
-    called_segment* all_segments = (called_segment*)calloc(num_func, sizeof(called_segment));
-
-    int *final_proc = (int *)calloc(num_func * 2, sizeof(int)); // TODO: magic number, mb realloc
-
-
-    for (int num_of_str = 0; num_of_str < num_func; num_of_str++)
+    for (int num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
     {
-        // TODO: ������� ��� ������� � ��������� ��������
+
         how_many = sscanf(programm.Ptrs[num_of_str], "%s %d", command, &val);
 
         #define DEF_CMD(NAME, HAS_VALUE, ...)           \
@@ -102,22 +83,22 @@ int main()
         }
 
 
-        if (how_many == 1)
-        {
-            final_proc[num_command] = (all_segments[num_of_str].command);
+        // if (how_many == 1)
+        // {
+        //     final_proc[num_command] = (all_segments[num_of_str].command);
 
-            num_command++;
+        //     num_command++;
 
-        }
-        else
-        {
-            final_proc[num_command] = (all_segments[num_of_str].command);
-            final_proc[num_command + 1] = (all_segments[num_of_str].val);
+        // }
+        // else
+        // {
+        //     final_proc[num_command] = (all_segments[num_of_str].command);
+        //     final_proc[num_command + 1] = (all_segments[num_of_str].val);
 
 
-            num_command = num_command + 2;
+        //     num_command = num_command + 2;
 
-        }
+        // }
 
 
     }
@@ -125,17 +106,17 @@ int main()
 
     free(all_segments);
 
-    DTor(programm.Buff, programm.Ptrs);
+    destructor_text_params(&tp);
 
-    for (int i = 0; i < num_command; i++)
-        printf("final_proc[%d] = %d;\n", i, final_proc[i]);
+    // for (int i = 0; i < num_command; i++)
+    //     printf("final_proc[%d] = %d;\n", i, final_proc[i]);
 
-    FILE* proc = fopen("processor.bin", "wb");
+    FILE* proc = fopen("program_code.txt", "w");
 
-    fwrite(final_proc, sizeof(int), num_command, proc); // TODO: �������� �������� ��� ��������� ����������
+    // fwrite(final_proc, sizeof(int), num_command, proc);
 
 
-    fclose(proc); // TODO: �������� �������� ��� ���� ��������
+    fclose(proc);
 
     free(final_proc);
 

@@ -26,13 +26,13 @@ enum {
 struct called_segment
 {
     int command;
-    int val;
+    double val;
 };
 
 
 char* input_str(char *str);
 
-void Run(int code[], size_t size)
+void Run(int code[], size_t size);
 
 
 #endif // ASSEMBLER
