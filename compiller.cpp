@@ -1,8 +1,6 @@
-#include "assembler.h"
+#include "processor.h"
 
-// *1 - Назване будто бы кринж
-
-int main(void)
+int main()
 {
     // TODO: Make separate file for allllll
     AllFile programm = {};
@@ -15,7 +13,7 @@ int main(void)
 
 
 
-    programm = ScanfFile(name_of_file); // TODO: убрать хардкод имени файла
+    programm = ScanfFile(name_of_file); // TODO: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
     free(name_of_file);
 
@@ -33,75 +31,74 @@ int main(void)
 
     for (int num_of_str = 0; num_of_str < num_func; num_of_str++)
     {
-        // TODO: парсить имя команды и аргументы отдельно
+        // TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         how_many = sscanf(programm.Ptrs[num_of_str], "%s %d", command, &val);
 
         #define DEF_CMD(NAME, HAS_VALUE, ...)           \
-        if (strcmp(command, #NAME) == 0)                \
+        if (strcasecmp(command, #NAME) == 0)            \
         {                                               \
             all_segments[num_of_str].command = NAME;    \
             if (HAS_VALUE)                              \
                 all_segments[num_of_str].val = val;     \
         }                                               \
 
-        #include "cmds.inc"
 
-        #undef DEF_CMD
 
         // TODO: make code generation
-        if (strcmp(command, "HLT") == 0)
+        if (strcasecmp(command, "HLT") == 0)
         {
             all_segments[num_of_str].command = HLT;
         }
-        else if (strcmp(command, "PUSH") == 0)
+        else if (strcasecmp(command, "PUSH") == 0)
         {
             all_segments[num_of_str].command = PUSH;
             all_segments[num_of_str].val = val;
         }
-        else if (strcmp(command, "POP") == 0)
+        else if (strcasecmp(command, "POP") == 0)
         {
             all_segments[num_of_str].command = POP;
             all_segments[num_of_str].val = val;
         }
-        else if (strcmp(command, "IN") == 0)
+        else if (strcasecmp(command, "IN") == 0)
         {
             all_segments[num_of_str].command = IN;
         }
-        else if (strcmp(command, "OUT") == 0)
+        else if (strcasecmp(command, "OUT") == 0)
         {
             all_segments[num_of_str].command = OUT;
         }
-        else if (strcmp(command, "MUL") == 0)
+        else if (strcasecmp(command, "MUL") == 0)
         {
             all_segments[num_of_str].command = MUL;
         }
-        else if (strcmp(command, "DIV") == 0)
+        else if (strcasecmp(command, "DIV") == 0)
         {
             all_segments[num_of_str].command = DIV;
         }
-        else if (strcmp(command, "SUB") == 0)
+        else if (strcasecmp(command, "SUB") == 0)
         {
             all_segments[num_of_str].command = SUB;
         }
-        else if (strcmp(command, "ADD") == 0)
+        else if (strcasecmp(command, "ADD") == 0)
         {
             all_segments[num_of_str].command = ADD;
         }
-        else if (strcmp(command, "SQRT") == 0)
+        else if (strcasecmp(command, "SQRT") == 0)
         {
             all_segments[num_of_str].command = SQRT;
         }
-        else if (strcmp(command, "SIN") == 0)
+        else if (strcasecmp(command, "SIN") == 0)
         {
             all_segments[num_of_str].command = SIN;
         }
-        else if (strcmp(command, "COS") == 0)
+        else if (strcasecmp(command, "COS") == 0)
         {
             all_segments[num_of_str].command = COS;
         }
         else
         {
             printf("huina kakaya to\n");
+
         }
 
 
@@ -133,12 +130,12 @@ int main(void)
     for (int i = 0; i < num_command; i++)
         printf("final_proc[%d] = %d;\n", i, final_proc[i]);
 
-    FILE* proc = fopen("processor.bin", "wb"); // TODO: добавить проверку что файл открылся
+    FILE* proc = fopen("processor.bin", "wb"); // TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-    fwrite(final_proc, sizeof(int), num_command, proc); // TODO: добавить проверку что нормально записалось
+    fwrite(final_proc, sizeof(int), num_command, proc); // TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 
-    fclose(proc); // TODO: добавить проверку что файл закрылся
+    fclose(proc); // TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     free(final_proc);
 
