@@ -5,7 +5,7 @@ int main()
     // TODO: Make separate file for allllll
     AllFile programm = {};
 
-    char *name_of_file = (char *)malloc(sizeof(char));
+    char *code = (char*)malloc(sizeof(char));
 
     printf("%s", "Enter file name:");
 
@@ -13,7 +13,7 @@ int main()
 
 
 
-    programm = ScanfFile(name_of_file); // TODO: ������ ������� ����� �����
+    programm = ScanfFile(name_of_file);
 
     free(name_of_file);
 
@@ -24,7 +24,7 @@ int main()
     int how_many = 0;     // *1
     int num_command = 0;
 
-    called_segment *all_segments = (called_segment *)calloc(num_func, sizeof(called_segment));
+    called_segment* all_segments = (called_segment*)calloc(num_func, sizeof(called_segment));
 
     int *final_proc = (int *)calloc(num_func * 2, sizeof(int)); // TODO: magic number, mb realloc
 
@@ -44,7 +44,7 @@ int main()
 
 
 
-        // TODO: make code generation
+        // TODO: make code generation               commands.txt
         if (strcasecmp(command, "HLT") == 0)
         {
             all_segments[num_of_str].command = HLT;
@@ -130,7 +130,7 @@ int main()
     for (int i = 0; i < num_command; i++)
         printf("final_proc[%d] = %d;\n", i, final_proc[i]);
 
-    FILE* proc = fopen("processor.bin", "wb"); // TODO: �������� �������� ��� ���� ��������
+    FILE* proc = fopen("processor.bin", "wb");
 
     fwrite(final_proc, sizeof(int), num_command, proc); // TODO: �������� �������� ��� ��������� ����������
 

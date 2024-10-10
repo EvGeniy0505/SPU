@@ -1,3 +1,6 @@
 [submodule "Stack"]
 	path = Stack
 	url = git@github.com:EvGeniy0505/Stack.git
+[submodule "Onegin"]
+	path = Onegin
+	url = git@github.com:EvGeniy0505/Onegin.git
