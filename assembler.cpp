@@ -1,11 +1,16 @@
+#include <math.h>
+
 #include "processor.h"
 
-int main()
-{
+const double no_val = 0xdedbed;                                     // уточнить
 
-    struct text_params tp = constructur_text_params();
+int assembler()
+{
+    struct text_params tp = constructur_text_params("program_asm.txt");
 
     called_segment* all_segments = (called_segment*)calloc(tp.quantity_strs, sizeof(called_segment));  //кол-во команд
+
+    int len_arr = 0;
 
     for (int num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
     {
@@ -20,6 +25,8 @@ int main()
             all_segments[num_of_str].command = (NAME);  \
             if (HAS_VALUE)                              \
                 all_segments[num_of_str].val = val;     \
+            else                                        \
+                all_segments[num_of_str].val = no_val;  \
         }
 
         #include "commands.txt"
@@ -27,38 +34,24 @@ int main()
         #undef DEF_CMD
     }
 
-    destructor_text_params(&tp);
+    FILE* prog_code = fopen("program_code.txt", "w");
 
-    FILE* prog_code = fopen("program_code.txt", "a");
-
-    for(int i = 0; i < tp.quantity_strs; i++)
-         fprintf(prog_code, "%d %lf\n", all_segments -> command, all_segments -> val);
-
-    fclose(prog_code);
-
-    for(int i = 0; i < tp.quantity_strs; i++)
-         fprintf(stdout, "%d %lf\n", all_segments -> command, all_segments -> val);
+    for(int num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
+    {
+        if(all_segments[num_of_str].val == no_val)
+        {
+            fprintf(prog_code, "%d\n", all_segments[num_of_str].command);
+            len_arr++;
+        }
+        else
+            fprintf(prog_code, "%d %lf\n", all_segments[num_of_str].command, all_segments[num_of_str].val);
+            len_arr += 2;
+    }
 
     free(all_segments);
+    fclose(prog_code);
+    destructor_text_params(&tp);
 
-    return 0;
+    return len_arr;
 }
 
-
-char* input_str(char *str)
-{
-    char c;
-    int len = 1;
-
-
-    while((c = getchar()) != '\n')
-    {
-        str[len - 1] = c;
-        len++;
-        str = (char*) realloc(str, len);
-    }
-    str[len - 1] = '\0';
-
-    return str;
-
-}

@@ -4,19 +4,27 @@
 #include "processor.h"
 
 
-
-    // FILE* proc = fopen("processor.bin", "rb");
-
-    // AllFile programm = ScanfFile("processor.bin");
-
-    // for(int num_of_str = 0; num_of_str < num_command; num_of_str++)
-    // {
-    //     programm.Ptrs[] =
-    // }
-
-void Run(int code[], size_t size)
+int* read_code_file(int len_code_arr)
 {
-    Stack stk = {};
+    struct text_params tp = constructur_text_params("program_code.txt");
+
+    int* code = (int*) calloc(len_code_arr, sizeof(stack_elem));
+
+    for(int num_of_str = 0; num_of_str < len_code_arr; num_of_str++)
+    {
+        int check = fscanf(tp.file, "%lf", code[num_of_str]);
+        if (check != 1)
+            printf("ERROR!!!!");
+    }
+
+    destructor_text_params(&tp);
+
+    return code;
+}
+
+void Run(double code[], size_t size)
+{
+    struct Stack stk = {};
     Stack_init(&stk, 10);
 
     int pc = 0;
@@ -24,7 +32,7 @@ void Run(int code[], size_t size)
 
     while(hlt_check)
     {
-        switch(code[pc])
+        switch((int)code[pc])
         {
             case PUSH:
                 Stack_push(&stk, code[pc + 1]);
@@ -41,7 +49,7 @@ void Run(int code[], size_t size)
 
                 break;
             case IN:
-                int new_val = 0;
+                stack_elem new_val = 0;
 
                 scanf("%d", new_val);
 
@@ -51,7 +59,7 @@ void Run(int code[], size_t size)
 
                 break;
             case OUT:
-                int del_val = 0;
+                stack_elem del_val = 0;
 
                 Stack_pop(&stk, &del_val);
                 printf("Удалили нахуй - %d\n", del_val);
@@ -60,8 +68,8 @@ void Run(int code[], size_t size)
 
                 break;
             case ADD:
-                int first_val  = 0;
-                int second_val = 0;
+                stack_elem first_val  = 0;
+                stack_elem second_val = 0;
 
                 Stack_pop(&stk, &first_val);
                 Stack_pop(&stk, &second_val);
@@ -72,8 +80,8 @@ void Run(int code[], size_t size)
 
                 break;
             case SUB:
-                int first_val  = 0;
-                int second_val = 0;
+                stack_elem first_val  = 0;
+                stack_elem second_val = 0;
 
                 Stack_pop(&stk, &first_val);
                 Stack_pop(&stk, &second_val);
@@ -85,8 +93,8 @@ void Run(int code[], size_t size)
 
                 break;
             case MUL:
-                int first_val  = 0;
-                int second_val = 0;
+                stack_elem first_val  = 0;
+                stack_elem second_val = 0;
 
                 Stack_pop(&stk, &first_val);
                 Stack_pop(&stk, &second_val);
@@ -97,8 +105,8 @@ void Run(int code[], size_t size)
 
                 break;
             case DIV:
-                int first_val  = 0;
-                int second_val = 0;
+                stack_elem first_val  = 0;
+                stack_elem second_val = 0;
 
                 Stack_pop(&stk, &first_val);
                 Stack_pop(&stk, &second_val);
@@ -107,7 +115,7 @@ void Run(int code[], size_t size)
 
                 break;
             case SQRT:
-                int val  = 0;
+                stack_elem val  = 0;
 
                 Stack_pop(&stk, &val);
 
@@ -117,7 +125,7 @@ void Run(int code[], size_t size)
 
                 break;
             case SIN:
-                int val  = 0;
+                stack_elem val  = 0;
 
                 Stack_pop(&stk, &val);
 
@@ -127,7 +135,7 @@ void Run(int code[], size_t size)
 
                 break;
             case COS:
-                int val  = 0;
+                stack_elem val  = 0;
 
                 Stack_pop(&stk, &val);
 
@@ -139,8 +147,6 @@ void Run(int code[], size_t size)
             case HLT:
                 hlt_check = false;
 
-                pc += 1;
-
                 break;
             default:
                 hlt_check = false;
@@ -148,4 +154,14 @@ void Run(int code[], size_t size)
                 printf("пиздец, пиздец, пиздец, что за член???");
         }
     }
+}
+
+
+int main()
+{
+    int len_code_arr = assembler();
+
+    read_code_file(len_code_arr);
+
+    return 0;
 }

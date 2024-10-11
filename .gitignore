@@ -3,3 +3,8 @@
 *.d
 stack
 build/
+processor
+CMakeCache.txt
+cmake_install.cmake
+CMakeFiles/
+Makefile

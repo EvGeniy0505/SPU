@@ -32,7 +32,8 @@ struct called_segment
 
 char* input_str(char *str);
 
-void Run(int code[], size_t size);
+void Run(double code[], size_t size);
 
+int assembler();
 
 #endif // ASSEMBLER
