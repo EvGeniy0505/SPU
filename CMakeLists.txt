@@ -4,7 +4,7 @@ project(SPU CXX)
 add_subdirectory(Stack)
 add_subdirectory(Onegin)
 
-set(SOURCE "compiller.cpp" "processor.cpp" "main.cpp")
+set(SOURCE "assembler.cpp" )
 
 add_executable(processor ${SOURCE})
 
