@@ -2,28 +2,33 @@
 
 #include "processor.h"
 
-const double no_val = 0xdedbed;                                     // уточнить
+#define FUNC_MAX_LEN 5
 
-int assembler()
+const double no_val = 0xdedbed;
+
+void assembler(const char* asm_code)
 {
-    struct text_params tp = constructur_text_params("program_asm.txt");
+    struct text_params tp = constructur_text_params(asm_code);
 
-    called_segment* all_segments = (called_segment*)calloc(tp.quantity_strs, sizeof(called_segment));  //кол-во команд
+    called_segment* all_segments = (called_segment*)calloc(tp.quantity_strs, sizeof(called_segment));
 
-    int len_arr = 0;
-
-    for (int num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
+    for (size_t num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
     {
-        char command[5] = {};
-        double val      = 0;
+        char* command       = (char*) calloc(FUNC_MAX_LEN, sizeof(char));        //[FUNC_MAX_LEN] = {};
+        double val_1        = 0;
+        double val_2        = 0;
+        int quantity_vals   = 0;
 
-        sscanf(tp.arr_of_ptrs[num_of_str].begin , "%s %lf", command, &val);
+        sscanf(tp.arr_of_ptrs[num_of_str].begin , "%s %d %lf %lf", command, &quantity_vals, &val_1, &val_2);
 
-        #define DEF_CMD(NAME, HAS_VALUE, ...)           \
+        #define DEF_CMD(NAME, ...)                      \
         if (strcasecmp(command, #NAME) == 0)            \
         {                                               \
             all_segments[num_of_str].command = (NAME);  \
-            if (HAS_VALUE)                              \
+            if(called_segment.quantity_vals == 2)       \
+                all_segments[num_of_str].val = val_1;   \
+                all_segments[num_of_str].val = val_2;   \
+            else if (called_segment.quantity_vals == 1) \
                 all_segments[num_of_str].val = val;     \
             else                                        \
                 all_segments[num_of_str].val = no_val;  \
@@ -32,26 +37,35 @@ int assembler()
         #include "commands.txt"
 
         #undef DEF_CMD
+
+        free(command);
     }
 
-    FILE* prog_code = fopen("program_code.txt", "w");
+    program_code_to_file("program_code.txt", all_segments, tp.quantity_strs);
 
-    for(int num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
+    free(all_segments);
+    destructor_text_params(&tp);
+
+}
+
+
+void program_code_to_file(const char* name_code_file, called_segment* all_segments, size_t quantity_commands)
+{
+    FILE* prog_code = fopen(name_code_file, "w");
+
+    int len_code_arr = 0;
+
+    for(size_t num_of_str = 0; num_of_str < quantity_commands; num_of_str++)
     {
         if(all_segments[num_of_str].val == no_val)
         {
-            fprintf(prog_code, "%d\n", all_segments[num_of_str].command);
-            len_arr++;
+            fprintf(prog_code, "%d ", all_segments[num_of_str].command);
         }
         else
-            fprintf(prog_code, "%d %lf\n", all_segments[num_of_str].command, all_segments[num_of_str].val);
-            len_arr += 2;
+        {
+            fprintf(prog_code, "%d %lf ", all_segments[num_of_str].command, all_segments[num_of_str].val);
+        }
     }
 
-    free(all_segments);
     fclose(prog_code);
-    destructor_text_params(&tp);
-
-    return len_arr;
 }
-

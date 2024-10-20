@@ -4,164 +4,61 @@
 #include "processor.h"
 
 
-int* read_code_file(int len_code_arr)
+void read_code_file(SPU* spu)
 {
-    struct text_params tp = constructur_text_params("program_code.txt");
+    struct text_params tp = constructur_text_params("/home/evgeniy/Документы/DED_Projects/SPU/program_code.txt");
 
-    int* code = (int*) calloc(len_code_arr, sizeof(stack_elem));
+    spu -> code = (double*) calloc(tp.quantity_strs * 3 / 2, sizeof(stack_elem));
 
-    for(int num_of_str = 0; num_of_str < len_code_arr; num_of_str++)
+    int num_of_symb = 0;
+
+    while(spu -> code[num_of_symb] != -1)
     {
-        int check = fscanf(tp.file, "%lf", code[num_of_str]);
+        int check = fscanf(tp.file, "%lf", spu -> code[num_of_symb]);
+
         if (check != 1)
-            printf("ERROR!!!!");
+            color_printf(stderr, RED, "ERROR!!!!\n\n\n");
+
+        num_of_symb++;
     }
 
-    destructor_text_params(&tp);
+    for (int i = 0; i < num_of_symb; ++i)
+        printf("%f ; ", spu -> code[num_of_symb]);
 
-    return code;
+    destructor_text_params(&tp);
 }
 
-void Run(double code[], size_t size)
+void Run(SPU* spu)
 {
-    struct Stack stk = {};
-    Stack_init(&stk, 10);
+    spu -> stk = {};
+    Stack_init(&spu -> stk, 10);
 
-    int pc = 0;
+    spu -> pc = 0;
     bool hlt_check = true;
 
     while(hlt_check)
     {
-        switch((int)code[pc])
+        switch((int)spu -> code[spu -> pc])
         {
-            case PUSH:
-                Stack_push(&stk, code[pc + 1]);
+            #define DEF_CODE_CMD(NAME, HAS_VALUE, ...) \
+            case NAME:{                                 \
+                __VA_ARGS__                              \
+                if(HAS_VALUE)                             \
+                    spu -> pc += 2;                        \
+                else                                        \
+                    spu -> pc += 1;                          \
+                break;}
 
-                pc += 2;
+            #include "commands_code.txt"
 
-                break;
-            case POP:
-                Stack_pop(&stk, &code[pc + 1]);
+            #undef DEF_CODE_CMD
 
-                pc += 2;
-
-                printf("Удалили нахуй - %d\n", code[pc + 1]);
-
-                break;
-            case IN:
-                stack_elem new_val = 0;
-
-                scanf("%d", new_val);
-
-                Stack_push(&stk, new_val);
-
-                pc += 1;
-
-                break;
-            case OUT:
-                stack_elem del_val = 0;
-
-                Stack_pop(&stk, &del_val);
-                printf("Удалили нахуй - %d\n", del_val);
-
-                pc += 1;
-
-                break;
-            case ADD:
-                stack_elem first_val  = 0;
-                stack_elem second_val = 0;
-
-                Stack_pop(&stk, &first_val);
-                Stack_pop(&stk, &second_val);
-
-                Stack_push(&stk, second_val + first_val);
-
-                pc += 1;
-
-                break;
-            case SUB:
-                stack_elem first_val  = 0;
-                stack_elem second_val = 0;
-
-                Stack_pop(&stk, &first_val);
-                Stack_pop(&stk, &second_val);
-
-
-                Stack_push(&stk, second_val - first_val);
-
-                pc += 1;
-
-                break;
-            case MUL:
-                stack_elem first_val  = 0;
-                stack_elem second_val = 0;
-
-                Stack_pop(&stk, &first_val);
-                Stack_pop(&stk, &second_val);
-
-                Stack_push(&stk, second_val * first_val);
-
-                pc += 1;
-
-                break;
-            case DIV:
-                stack_elem first_val  = 0;
-                stack_elem second_val = 0;
-
-                Stack_pop(&stk, &first_val);
-                Stack_pop(&stk, &second_val);
-
-                Stack_push(&stk, second_val / first_val);
-
-                break;
-            case SQRT:
-                stack_elem val  = 0;
-
-                Stack_pop(&stk, &val);
-
-                Stack_push(&stk, sqrt(val));
-
-                pc += 1;
-
-                break;
-            case SIN:
-                stack_elem val  = 0;
-
-                Stack_pop(&stk, &val);
-
-                Stack_push(&stk, sin(val));
-
-                pc += 1;
-
-                break;
-            case COS:
-                stack_elem val  = 0;
-
-                Stack_pop(&stk, &val);
-
-                Stack_push(&stk, cos(val));
-
-                pc += 1;
-
-                break;
-            case HLT:
+            case HLT:{
                 hlt_check = false;
-
-                break;
-            default:
+                break;}
+            default:{
                 hlt_check = false;
-
-                printf("пиздец, пиздец, пиздец, что за член???");
+                color_printf(stderr, RED, "пиздец, пиздец, пиздец, что за хуй???\n");}
         }
     }
-}
-
-
-int main()
-{
-    int len_code_arr = assembler();
-
-    read_code_file(len_code_arr);
-
-    return 0;
 }

@@ -1,0 +1,69 @@
+DEF_CODE_CMD(PUSH, 1, Stack_push(&spu -> stk, spu -> code[spu -> pc + 1]);)
+
+DEF_CODE_CMD(POP,  1, Stack_pop(&spu -> stk, &spu -> code[spu -> pc + 1]);
+                      printf("Удалили нахуй - %lf\n", spu -> code[spu -> pc + 1]);)
+
+DEF_CODE_CMD(IN, 0, stack_elem new_val = 0;
+                    scanf("%lf", &new_val);
+                    Stack_push(&spu -> stk, new_val);)
+
+DEF_CODE_CMD(OUT, 0, stack_elem del_val = 0;
+                     Stack_pop(&spu -> stk, &del_val);
+                     printf("Удалили нахуй - %lf\n", del_val);)
+
+DEF_CODE_CMD(ADD, 0, stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val + first_val);)
+
+DEF_CODE_CMD(MUL, 0, stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val * first_val);)
+
+DEF_CODE_CMD(SUB, 0, stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val - first_val);)
+
+DEF_CODE_CMD(DIV, 0, stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val / first_val);)
+
+DEF_CODE_CMD(SQRT, 0, stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, sqrt(val));)
+
+DEF_CODE_CMD(SIN, 0,  stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, sin(val));)
+
+DEF_CODE_CMD(COS, 0,  stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, cos(val));)
+
+DEF_CODE_CMD(JA,  1, stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     if(first_val > second_val)
+                        spu -> pc = 0;)
+
+DEF_CODE_CMD(JAE,  1, stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, cos(val));)
