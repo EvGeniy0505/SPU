@@ -4,11 +4,11 @@
 
 int main()
 {
-        assembler("/home/evgeniy/Документы/DED_Projects/SPU/program_asm.txt");
+    assembler("/home/evgeniy/Документы/DED_Projects/SPU/program_asm.asm");
 
-        SPU spu = {};
+    // SPU spu = {};
 
-        read_code_file(&spu);
+    // read_code_file(&spu);
 
     return 0;
 }

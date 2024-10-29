@@ -41,15 +41,17 @@ void Run(SPU* spu)
         switch((int)spu -> code[spu -> pc])
         {
             #define DEF_CODE_CMD(NAME, HAS_VALUE, ...) \
-            case NAME:{                                 \
-                __VA_ARGS__                              \
-                if(HAS_VALUE)                             \
-                    spu -> pc += 2;                        \
-                else                                        \
-                    spu -> pc += 1;                          \
-                break;}
+            case NAME:                                  \
+            {                                            \
+                __VA_ARGS__                               \
+                if(HAS_VALUE)                              \
+                    spu -> pc += 2;                         \
+                else                                         \
+                    spu -> pc += 1;                           \
+                break;                                         \
+            }
 
-            #include "commands_code.txt"
+            #include "commands.txt"
 
             #undef DEF_CODE_CMD
 

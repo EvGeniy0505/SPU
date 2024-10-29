@@ -1,3 +1,7 @@
 {
-    "cmake.sourceDirectory": "/home/evgeniy/Документы/DED_Projects/SPU"
+    "cmake.sourceDirectory": "/home/evgeniy/Документы/DED_Projects/SPU",
+    "files.associations": {
+        "*.txt": "bat",
+        "system_error": "cpp"
+    }
 }

@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Wag
 add_subdirectory(Stack)
 add_subdirectory(Onegin)
 
-set(SOURCE "assembler.cpp" "main.cpp" "processor.cpp")
+set(SOURCE "assembler.cpp" "main.cpp")
 
 add_executable(processor ${SOURCE})
 

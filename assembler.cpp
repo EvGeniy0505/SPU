@@ -2,70 +2,88 @@
 
 #include "processor.h"
 
-#define FUNC_MAX_LEN 5
-
-const double no_val = 0xdedbed;
+const unsigned long int no_val = 0xdedbed;
 
 void assembler(const char* asm_code)
 {
     struct text_params tp = constructur_text_params(asm_code);
 
-    called_segment* all_segments = (called_segment*)calloc(tp.quantity_strs, sizeof(called_segment));
+    int* code = (int*) calloc(tp.len_buff, sizeof(int));
+    int num_symb = 0;
+    int num_bin_elem = 0;
 
-    for (size_t num_of_str = 0; num_of_str < tp.quantity_strs; num_of_str++)
+    while(num_symb < tp.len_buff)
     {
-        char* command       = (char*) calloc(FUNC_MAX_LEN, sizeof(char));        //[FUNC_MAX_LEN] = {};
-        double val_1        = 0;
-        double val_2        = 0;
-        int quantity_vals   = 0;
+        one_command com = read_command(&tp, num_symb);
+        num_symb += com.len;
 
-        sscanf(tp.arr_of_ptrs[num_of_str].begin , "%s %d %lf %lf", command, &quantity_vals, &val_1, &val_2);
+        ++num_symb;           // проходим пробел или '\0'
 
-        #define DEF_CMD(NAME, ...)                      \
-        if (strcasecmp(command, #NAME) == 0)            \
-        {                                               \
-            all_segments[num_of_str].command = (NAME);  \
-            if(called_segment.quantity_vals == 2)       \
-                all_segments[num_of_str].val = val_1;   \
-                all_segments[num_of_str].val = val_2;   \
-            else if (called_segment.quantity_vals == 1) \
-                all_segments[num_of_str].val = val;     \
-            else                                        \
-                all_segments[num_of_str].val = no_val;  \
+        one_register reg = read_register(&tp, num_symb);
+        num_symb += reg.len;
+
+        #define DEF_CMD(NAME, NUM, ARGS, ...)                     \
+        if (strcasecmp(com.name, #NAME) == 0)                     \
+        {                                                         \
+            code[num_bin_elem] = NUM;                             \
+            ++num_bin_elem;                                       \
+            if (ARGS == 1)                                        \
+            {                                                     \
+                code[num_bin_elem] = atoi(tp.buff + num_symb);    \
+                ++num_bin_elem;                                   \
+                num_symb += 2;                                    \
+            }                                                     \
         }
-
         #include "commands.txt"
 
         #undef DEF_CMD
-
-        free(command);
     }
 
-    program_code_to_file("program_code.txt", all_segments, tp.quantity_strs);
+    write_bin_code_to_file("program_code.bin", code, num_bin_elem);
 
-    free(all_segments);
     destructor_text_params(&tp);
-
+    free(code);
 }
 
 
-void program_code_to_file(const char* name_code_file, called_segment* all_segments, size_t quantity_commands)
+void write_bin_code_to_file(const char* name_file, int* code, int num_elems)
 {
-    FILE* prog_code = fopen(name_code_file, "w");
+    FILE* fp = fopen(name_file, "wb");
 
-    int len_code_arr = 0;
+    fwrite(code, num_elems, sizeof(int), fp);
 
-    for(size_t num_of_str = 0; num_of_str < quantity_commands; num_of_str++)
+    fclose(fp);
+}
+
+one_command read_command(text_params* tp, int num_symb)
+{
+    one_command com = {0, ""};
+
+    while(tp -> buff[num_symb] != ' '  && tp -> buff[num_symb] != '\0')
     {
-        if(all_segments[num_of_str].val == no_val)
+        memcpy(&com.name[com.len], &tp -> buff[num_symb], sizeof(char));
+        ++com.len;
+        ++num_symb;
+    }
+
+    return com;
+}
+
+one_register read_register(text_params* tp, int num_symb)
+{
+    one_register reg = {};
+    reg.len = 0;
+
+    if(tp -> buff[num_symb - 1] == ' ')
+    {
+        while(tp -> buff[num_symb] != '\0' && tp -> buff[num_symb] > 96 && tp -> buff[num_symb] < 123)
         {
-            fprintf(prog_code, "%d ", all_segments[num_of_str].command);
-        }
-        else
-        {
-            fprintf(prog_code, "%d %lf ", all_segments[num_of_str].command, all_segments[num_of_str].val);
+            memcpy(&reg.name_reg[reg.len], &tp -> buff[num_symb], sizeof(char));
+            ++reg.len;
+            ++num_symb;
+
         }
     }
 
-    fclose(prog_code);
+    return reg;
 }

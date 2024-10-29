@@ -1,20 +1,73 @@
-DEF_CMD(HLT, 0)
-DEF_CMD(PUSH,1)
-DEF_CMD(POP, 1)
-DEF_CMD(ADD, 0)
-DEF_CMD(MUL, 0)
-DEF_CMD(SUB, 0)
-DEF_CMD(DIV, 0)
-DEF_CMD(IN,  0)
-DEF_CMD(OUT, 0)
-DEF_CMD(SQRT,0)
-DEF_CMD(SIN, 0)
-DEF_CMD(COS, 0)
-DEF_CMD(JA,  1)
-DEF_CMD(JAE, 1)
-DEF_CMD(JB , 1)
-DEF_CMD(JBE, 1)
-DEF_CMD(JE,  1)
-DEF_CMD(JNE, 1)
-DEF_CMD(JMP, 1)
+DEF_CMD(PUSH, 1, 1, Stack_push(&spu -> stk, spu -> code[spu -> pc + 1]);)
 
+DEF_CMD(POP,  2, 1, Stack_pop(&spu -> stk, &spu -> code[spu -> pc + 1]);
+                    printf("Удалили нахуй - %lf\n", spu -> code[spu -> pc + 1]);)
+
+DEF_CMD(IN, 3, 0,   stack_elem new_val = 0;
+                    scanf("%lf", &new_val);
+                    Stack_push(&spu -> stk, new_val);)
+
+DEF_CMD(OUT, 4, 0,   stack_elem del_val = 0;
+                     Stack_pop(&spu -> stk, &del_val);
+                     printf("Удалили нахуй - %lf\n", del_val);)
+
+DEF_CMD(ADD, 5, 0,   stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val + first_val);)
+
+DEF_CMD(MUL, 6, 0,   stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val * first_val);)
+
+DEF_CMD(SUB, 7, 0,   stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val - first_val);)
+
+DEF_CMD(DIV, 8, 0,   stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     Stack_push(&spu -> stk, second_val / first_val);)
+
+DEF_CMD(SQRT, 9, 0,   stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, sqrt(val));)
+
+DEF_CMD(SIN, 10, 0,   stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, sin(val));)
+
+DEF_CMD(COS, 11, 0,   stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, cos(val));)
+
+DEF_CMD(JA,  12, 1,  stack_elem first_val  = 0;
+                     stack_elem second_val = 0;
+
+                     Stack_pop(&spu -> stk, &first_val);
+                     Stack_pop(&spu -> stk, &second_val);
+
+                     if(first_val > second_val)
+                        spu -> pc = 0;)
+
+DEF_CMD(JAE,  13, 1,  stack_elem val  = 0;
+                      Stack_pop(&spu -> stk, &val);
+                      Stack_push(&spu -> stk, cos(val));)
+
+DEF_CMD(HLT, -1, 0)
+
+DEF_CMD(CALL, 14, 1)
