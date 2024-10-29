@@ -16,6 +16,14 @@ enum commands
     #undef DEF_CMD
 };
 
+enum registers
+{
+    ax = 1,
+    bx,
+    cx,
+    dx
+};
+
 struct SPU
 {
     double* code;
@@ -37,6 +45,13 @@ struct one_register
     char name_reg[REG_MAX_VAL];
 };
 
+struct reg_plus_val
+{
+    int len;
+    int val;
+    char name_reg[REG_MAX_VAL];
+};
+
 void Run(SPU* spu);
 
 void read_code_file(SPU* spu);
@@ -50,6 +65,10 @@ one_command read_command(text_params* tp, int num_symb);
 void write_bin_code_to_file(const char* name_file, int* code, int num_elems);
 
 one_register read_register(text_params* tp, int num_symb);
+
+registers num_reg(const char* reg);
+
+reg_plus_val read_reg_plus_num(text_params* tp, int num_symb);
 
 /*-------------------------------------------------*/
 

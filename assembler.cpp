@@ -22,21 +22,52 @@ void assembler(const char* asm_code)
         one_register reg = read_register(&tp, num_symb);
         num_symb += reg.len;
 
-        #define DEF_CMD(NAME, NUM, ARGS, ...)                     \
-        if (strcasecmp(com.name, #NAME) == 0)                     \
-        {                                                         \
-            code[num_bin_elem] = NUM;                             \
-            ++num_bin_elem;                                       \
-            if (ARGS == 1)                                        \
-            {                                                     \
-                code[num_bin_elem] = atoi(tp.buff + num_symb);    \
-                ++num_bin_elem;                                   \
-                num_symb += 2;                                    \
-            }                                                     \
+        reg_plus_val reg_val = read_reg_plus_num(&tp, num_symb);
+        num_symb += reg.len;
+
+        #define DEF_CMD(NAME, NUM, ARGS, ...)                         \
+        if (strcasecmp(com.name, #NAME) == 0)                         \
+        {                                                             \
+            code[num_bin_elem] = NUM;                                 \
+            ++num_bin_elem;                                           \
+            if (ARGS == 1)                                            \
+            {                                                         \
+                if(strcasecmp(reg.name_reg, "[") == 0)                \
+                {                                                     \
+                    code[num_bin_elem] = 3;                           \
+                    ++num_bin_elem;                                   \
+                    code[num_bin_elem] = num_reg(reg_val.name_reg);   \
+                    ++num_bin_elem;                                   \
+                    code[num_bin_elem] = reg_val.val;                 \
+                    ++num_bin_elem;                                   \
+                }                                                     \
+                else if(strcasecmp(reg.name_reg, "") != 0)            \
+                {                                                     \
+                    code[num_bin_elem] = 2;                           \
+                    ++num_bin_elem;                                   \
+                    code[num_bin_elem] = num_reg(reg.name_reg);       \
+                    ++num_bin_elem;                                   \
+                }                                                     \
+                else                                                  \
+                {                                                     \
+                    code[num_bin_elem] = 1;                           \
+                    ++num_bin_elem;                                   \
+                    code[num_bin_elem] = atoi(tp.buff + num_symb);    \
+                    ++num_bin_elem;                                   \
+                    num_symb += 2;                                    \
+                }                                                     \
+            }                                                         \
         }
         #include "commands.txt"
 
         #undef DEF_CMD
+
+        // printf("Code:\n");
+        // for(int i = 0; i < tp.len_buff; i++)
+        // {
+        //     printf("%d ", code[i]);
+        // }
+        // putchar('\n');
     }
 
     write_bin_code_to_file("program_code.bin", code, num_bin_elem);
@@ -44,7 +75,6 @@ void assembler(const char* asm_code)
     destructor_text_params(&tp);
     free(code);
 }
-
 
 void write_bin_code_to_file(const char* name_file, int* code, int num_elems)
 {
@@ -71,8 +101,7 @@ one_command read_command(text_params* tp, int num_symb)
 
 one_register read_register(text_params* tp, int num_symb)
 {
-    one_register reg = {};
-    reg.len = 0;
+    one_register reg = {0, ""};
 
     if(tp -> buff[num_symb - 1] == ' ')
     {
@@ -81,9 +110,54 @@ one_register read_register(text_params* tp, int num_symb)
             memcpy(&reg.name_reg[reg.len], &tp -> buff[num_symb], sizeof(char));
             ++reg.len;
             ++num_symb;
-
         }
     }
 
     return reg;
+}
+
+reg_plus_val read_reg_plus_num(text_params* tp, int num_symb)
+{
+    reg_plus_val reg_val = {0, no_val, ""};
+
+    if (tp -> buff[num_symb] == '[' && (tp -> buff[num_symb + 9] == ']' || tp -> buff[num_symb + 10] == ']'))
+    {
+        while(tp -> buff[num_symb] != ' ')
+        {
+            memcpy(&reg_val.name_reg[reg_val.len], &tp -> buff[num_symb], sizeof(char));
+            ++reg_val.len;
+            ++num_symb;
+        }
+
+        reg_val.len += 3;
+        num_symb    += 3;
+
+        reg_val.val =  atoi(&tp -> buff[num_symb]);
+
+        reg_val.len += 2;
+        num_symb    += 2;
+
+    }
+}
+
+#define REG_NAME(REG) #REG
+
+registers num_reg(const char* reg)
+{
+    if(strcasecmp(reg, REG_NAME(ax)) == 0)
+    {
+        return ax;
+    }
+    else if(strcasecmp(reg, REG_NAME(bx)) == 0)
+    {
+        return bx;
+    }
+    else if(strcasecmp(reg, REG_NAME(cx)) == 0)
+    {
+        return cx;
+    }
+    else if(strcasecmp(reg, REG_NAME(dx)) == 0)
+    {
+        return dx;
+    }
 }
