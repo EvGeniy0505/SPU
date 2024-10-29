@@ -50,6 +50,7 @@ struct reg_plus_val
     int len;
     int val;
     char name_reg[REG_MAX_VAL];
+    char flag;
 };
 
 void Run(SPU* spu);

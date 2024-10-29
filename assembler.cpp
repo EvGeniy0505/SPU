@@ -23,7 +23,11 @@ void assembler(const char* asm_code)
         num_symb += reg.len;
 
         reg_plus_val reg_val = read_reg_plus_num(&tp, num_symb);
-        num_symb += reg.len;
+        num_symb += reg_val.len;
+
+        // printf("%s ", com.name);
+        // printf("%d\n", atoi(tp.buff + num_symb));
+        // printf("num_symb = %d\n", num_symb);
 
         #define DEF_CMD(NAME, NUM, ARGS, ...)                         \
         if (strcasecmp(com.name, #NAME) == 0)                         \
@@ -32,7 +36,7 @@ void assembler(const char* asm_code)
             ++num_bin_elem;                                           \
             if (ARGS == 1)                                            \
             {                                                         \
-                if(strcasecmp(reg.name_reg, "[") == 0)                \
+                if(strcasecmp(&reg_val.flag, "[") == 0)               \
                 {                                                     \
                     code[num_bin_elem] = 3;                           \
                     ++num_bin_elem;                                   \
@@ -40,6 +44,7 @@ void assembler(const char* asm_code)
                     ++num_bin_elem;                                   \
                     code[num_bin_elem] = reg_val.val;                 \
                     ++num_bin_elem;                                   \
+                    ++num_symb;                                       \
                 }                                                     \
                 else if(strcasecmp(reg.name_reg, "") != 0)            \
                 {                                                     \
@@ -118,26 +123,32 @@ one_register read_register(text_params* tp, int num_symb)
 
 reg_plus_val read_reg_plus_num(text_params* tp, int num_symb)
 {
-    reg_plus_val reg_val = {0, no_val, ""};
+    reg_plus_val reg_val = {0, no_val, "", '\0'};
 
-    if (tp -> buff[num_symb] == '[' && (tp -> buff[num_symb + 9] == ']' || tp -> buff[num_symb + 10] == ']'))
+    if(num_symb + 7 < tp -> len_buff && num_symb + 8 < tp -> len_buff)
     {
-        while(tp -> buff[num_symb] != ' ')
+        if (tp -> buff[num_symb] == '[' && (tp -> buff[num_symb + 7] == ']' || tp -> buff[num_symb + 8] == ']'))
         {
-            memcpy(&reg_val.name_reg[reg_val.len], &tp -> buff[num_symb], sizeof(char));
-            ++reg_val.len;
+            reg_val.flag = '[';
             ++num_symb;
+            while(tp -> buff[num_symb] != ' ')
+            {
+                memcpy(&reg_val.name_reg[reg_val.len], &tp -> buff[num_symb], sizeof(char));
+                ++reg_val.len;
+                ++num_symb;
+            }
+
+            reg_val.len += 3;
+            num_symb    += 3;
+
+            reg_val.val =  atoi(&tp -> buff[num_symb]);
+
+            reg_val.len += 3;
+            num_symb    += 2;
         }
-
-        reg_val.len += 3;
-        num_symb    += 3;
-
-        reg_val.val =  atoi(&tp -> buff[num_symb]);
-
-        reg_val.len += 2;
-        num_symb    += 2;
-
     }
+
+    return reg_val;
 }
 
 #define REG_NAME(REG) #REG

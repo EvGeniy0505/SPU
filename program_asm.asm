@@ -1,7 +1,7 @@
-PUSH 3
+PUSH [ax + 2]
 PUSH 1
 DIV
-PUSH 4
+PUSH 5
 PUSH 3
 MUL
 ADD
